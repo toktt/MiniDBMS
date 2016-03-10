@@ -150,17 +150,23 @@ public class Table {
 		}
 		
 		//check if object is already exist
-		if(PK.equals("default")){
-			jarray.put(jobject);
-		}else{
-			if(dbMap.keySet().contains(PK)){
-				System.out.println(jobject.toString()+" already exist");
-				return false;
+		for(int k=0; k<jarray.length(); k++){
+			try {
+				JSONObject jtmp = jarray.getJSONObject(k);
+				if(jtmp.toString().equals(jobject.toString())){
+					System.out.println(jobject.toString()+" already exist");
+					return false;
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else{
-				dbMap.put(PK, jobject);
-				jarray.put(jobject);
-			}
+			
+		}
+		jarray.put(jobject);
+		
+		if(!PK.equals("default")){
+			dbMap.put(PK, jobject);
 		}
 		return true;
 	}
