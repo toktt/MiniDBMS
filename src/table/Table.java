@@ -33,10 +33,11 @@ public class Table {
 		this.name = name;
 		Timer timer = new Timer();
 		timer.schedule(new AutoSave(), 0, 2*60*1000);
-		dbpath = name + ".txt";
-		attrpath = name + "_attr.txt";
+		dbpath = this.name + ".txt";
+		attrpath = this.name + "_attr.txt";
 		dbfile = new File(directory+dbpath);
 		attrfile = new File(directory+attrpath);
+		dbMap = new HashMap<String, JSONObject>();
 	}
 	
 	public void retreiveAll(){
@@ -57,7 +58,6 @@ public class Table {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			dbMap = new HashMap();
 			return true;
 		}
 	}
@@ -91,18 +91,39 @@ public class Table {
 	}
 
 	public void retreiveTable(){
-		
+		String s = "";
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(dbpath));
+			while((s = in.readLine()) != null){
+					jobject = new JSONObject(s); 
+					jarray.put(jobject);
+			}
+			in.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean insert(String infor){
 		dirty = true;
 		String tmp[] = infor.split(",");
 		jobject = new JSONObject();
+		String PK;
 		for(int i=0; i<attrs.length; i++){
 			for(int j=0; j<tmp.length; j+=2){
-				if(attrs[i].getKeyType().equals("PK") && tmp[j+1] == null){
-					System.out.println("PK is null");
-					return false;
+				if(attrs[i].getKeyType().equals("PK")){
+					PK = tmp[j+1];
+					if(PK == null){
+						System.out.println("PK is null");
+						return false;
+					}
 				}
 				if(!attrs[i].getDateType().equals(tmp[j])){
 					System.out.println("Wrong data type");
@@ -149,8 +170,9 @@ public class Table {
 		FileWriter out;
 		try {
 			out = new FileWriter(dbfile.getAbsolutePath());
-			for(int i=0; i<jarray.length(); i++)
-					out.write(jarray.getString(i).toString());
+			for(int i=0; i<jarray.length(); i++){
+					out.write(jarray.getJSONObject(i).toString());
+			}
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
