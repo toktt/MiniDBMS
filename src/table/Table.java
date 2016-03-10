@@ -21,6 +21,7 @@ public class Table {
 	private String dbpath;
 	private String attrpath;
 	private String directory = "/MiniDBMS";
+	private String PK = "default";
 	private HashMap<String,JSONObject> dbMap;
 	private File dbfile;
 	private File attrfile;
@@ -112,12 +113,13 @@ public class Table {
 	}
 	
 	public boolean insert(String infor){
+		int i,j;
 		dirty = true;
 		String tmp[] = infor.split(",");
 		jobject = new JSONObject();
-		String PK;
-		for(int i=0; i<attrs.length; i++){
-			for(int j=0; j<tmp.length; j+=2){
+		//check confilct and make a jobect
+		for(i=0, j=0; i<attrs.length && j<tmp.length; i++,j+=2){
+			//for(int j=0; j<tmp.length; j+=2){
 				if(attrs[i].getKeyType().equals("PK")){
 					PK = tmp[j+1];
 					if(PK == null){
@@ -145,9 +147,21 @@ public class Table {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+		}
+		
+		//check if object is already exist
+		if(PK.equals("default")){
+			jarray.put(jobject);
+		}else{
+			if(dbMap.keySet().contains(PK)){
+				System.out.println(jobject.toString()+" already exist");
+				return false;
+			}
+			else{
+				dbMap.put(PK, jobject);
+				jarray.put(jobject);
 			}
 		}
-		jarray.put(jobject);
 		return true;
 	}
 	
