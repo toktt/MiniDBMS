@@ -59,6 +59,7 @@ public class Table {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println("new an empty table");
 			return true;
 		}
 	}
@@ -67,6 +68,7 @@ public class Table {
 		//if datatype = int , lenght = -1
 		dirty = true;
 		attrs[i] = new Attribute(name, dataType, keyType, length);
+		System.out.println("add"+ i + "th attr");
 	}
 	
 	public void retreiveAttr(){
@@ -115,11 +117,12 @@ public class Table {
 	public boolean insert(String infor){
 		int i,j;
 		dirty = true;
-		String tmp[] = infor.split(",");
+		String tmp[] = infor.split(",");// data:  Attr, type, data
 		jobject = new JSONObject();
 		//check confilct and make a jobect
-		for(i=0, j=0; i<attrs.length && j<tmp.length; i++,j+=2){
-			//for(int j=0; j<tmp.length; j+=2){
+		//first check attr
+		
+		for(i=0, j=0; i<attrs.length && j<tmp.length; i++,j+=3){
 				if(attrs[i].getKeyType().equals("PK")){
 					PK = tmp[j+1];
 					if(PK == null){
@@ -148,7 +151,8 @@ public class Table {
 					e.printStackTrace();
 				}
 		}
-		
+		//not check PK
+		//add a PKset 
 		//check if object is already exist
 		for(int k=0; k<jarray.length(); k++){
 			try {
