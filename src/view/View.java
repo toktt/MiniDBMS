@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
 public class View implements ActionListener 
 {
 	JFrame mainframe = new JFrame("DBMS");
-	JButton login_btn = new JButton("“o“ü");
+	JButton login_btn = new JButton("INPUT");
 	JPanel panel = new JPanel(); 
 
 	JTextArea input_text = new JTextArea();

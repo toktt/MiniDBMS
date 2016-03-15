@@ -260,16 +260,17 @@ public class Parser {
 			//int tmp = 0;
 			while(!tmp_word.substring(tmp_word.length()-1).equals(")"))//還沒結束
 			{
-				if(!tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(","))
-				{
-					System.out.println("DATA_INSERTION:NO COMMA BEHIND ATTRIBUTE");
-					return null;
-				}
 				if(tmp_word.equalsIgnoreCase("VALUES"))
 				{
 					System.out.println("DATA_INSERTION:haven't meet )yet,but already meet VALUES");
 					return null;
 				}
+				if(!tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(","))
+				{
+					System.out.println("DATA_INSERTION:NO COMMA OR ) BEHIND ATTRIBUTE");
+					return null;
+				}
+				
 				answer.add(tmp_word.substring(0, tmp_word.length()-1));
 				//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
 				tmp_word = str.nextToken();
