@@ -68,6 +68,7 @@ public class Table {
 	public void addAttr(int i, String name, String dataType, String keyType, int length){
 		//if datatype = int , length = -1
 		dirty = true;
+		System.out.println(i+ name+ dataType+ keyType+ length);
 		attrs[i] = new Attribute(name, dataType, keyType, length);
 		System.out.println("add"+ i + "th attr");
 	}
