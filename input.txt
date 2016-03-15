@@ -1,6 +1,3 @@
 CREATE TABLE Student (
-studentId int PRIMARY KEY,
-name varchar(15),
-gender varchar(1),
-age int
+studentId int,
 )

@@ -70,6 +70,7 @@ public class Table {
 		dirty = true;
 		System.out.println(i+ name+ dataType+ keyType+ length);
 		attrs[i] = new Attribute(name, dataType, keyType, length);
+		//System.out.println(i+ name+ dataType+ keyType+ length);
 		System.out.println("add"+ i + "th attr");
 	}
 	

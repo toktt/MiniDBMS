@@ -99,7 +99,7 @@ public class Parser {
 								
 								
 								answer = answer+" "+types;
-								answer = answer+" PRIMARY_KEY";
+								answer = answer+"_PRIMARY_KEY";
 								//
 								System.out.println("I AM PRIMARY KEY,CORRECT");
 							}
@@ -409,6 +409,8 @@ public class Parser {
 				//call table
 				StringTokenizer parse_answer = new StringTokenizer(answer);
 				parse_answer.nextToken();
+				
+				
 				Table table = new Table(parse_answer.nextToken());
 				table.newTable();
 				int i = 0;
@@ -416,12 +418,14 @@ public class Parser {
 				{
 					String name = parse_answer.nextToken();
 					String dataType = parse_answer.nextToken();
-					String tmp = parse_answer.nextToken();
+					//tmp = parse_answer.nextToken();
 					String keyType = "default";
 					int length = 0;
-					if(tmp.equals("PRIMARY_KEY"))
+					if(dataType.length()>=15 && dataType.substring(dataType.length()-11, dataType.length()).equals("PRIMARY_KEY"))
 					{
-						keyType = dataType;
+						keyType = dataType.substring(0, dataType.length()-12);
+						dataType = dataType.substring(0, dataType.length()-12);
+						
 					}
 					else
 					{
@@ -437,8 +441,8 @@ public class Parser {
 					}
 					//System.out.println(i+ name+ dataType+ keyType+ length);
 					table.addAttr(i, name, dataType, keyType, length);
-					
 					i++;
+					
 				}
 
 				//fw.write(answer);
