@@ -1,4 +1,5 @@
-studentId int_PRIMARY_KEY PK
-name String default
-gender String default
-age int default
+4
+studentId int PK -1
+name String default 15
+gender String default 1
+age int default -1

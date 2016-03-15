@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,14 +32,14 @@ public class Table {
 	private JSONArray jarray = new JSONArray();
 	private boolean dirty = false;
 	//private Attribute test;
-	private ArrayList<Attribute>attr = new ArrayList();
-	private Set<String> pkSet;
+	public ArrayList<Attribute>attr = new ArrayList();
+	private Set<String> pkSet = new HashSet();
 	
 	//use for first time create
 	public Table(String name){
 		this.name = name;
 		Timer timer = new Timer();
-		timer.schedule(new AutoSave(), 0, 2*60*1000);
+		timer.schedule(new AutoSave(), 0, 10*1000);
 		dbpath = this.name + ".txt";
 		attrpath = this.name + "_attr.txt";
 		dbfile = new File(directory+dbpath);
@@ -69,6 +70,16 @@ public class Table {
 		}
 	}
 	
+	/*public boolean Table_Exist(String name)
+	{
+		if(dbfile.exists() && attrfile.exists()){
+			System.out.println("Table already exist");
+			return true;
+		}
+		return false;
+	
+	}
+	*/
 	public void addAttr(int i, String name, String dataType, String keyType, int length){
 		//if datatype = int , length = -1
 		dirty = true;
@@ -77,6 +88,7 @@ public class Table {
 		attr.add(new Attribute(name, dataType, keyType, length));
 		System.out.println(attr.get(0).getName());
 		System.out.println("add"+ i + "th attr");
+		writeAttr();
 	}
 	
 	public void retreiveAttr(){
@@ -88,7 +100,7 @@ public class Table {
 				String tmp;
 				tmp = in.readLine();
 				String[] attrtmp = tmp.split(" ");
-				attrs[i] = new Attribute(attrtmp[0], attrtmp[1], attrtmp[2], Integer.parseInt(attrtmp[3]));
+				attr.add(new Attribute(attrtmp[0], attrtmp[1], attrtmp[2], Integer.parseInt(attrtmp[3]))); 
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -121,6 +133,7 @@ public class Table {
 			e.printStackTrace();
 		}
 	}
+	//retrieveset
 	
 	public boolean insert(String infor){
 		int i,j;
@@ -129,21 +142,50 @@ public class Table {
 		jobject = new JSONObject();
 		//check confilct and make a jobect
 		//first check attr
-		
+		int y;
+		int q;
+		/*try {
+			System.out.println(jarray.getJSONObject(0).get("studentId")+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+		for(y = 0;y<attr.size();y++)
+		{
+			if(attr.get(y).getKeyType().equals("PK"))
+					{
+						for(q = 0;q<jarray.length();q++)
+						{
+							try {
+								pkSet.add(jarray.getJSONObject(q).get("studentId").toString());
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+					
+		}
+		//jarray.optString(0);
 		for(j=0; j<tmp.length; j+=3){
 			for(i=0 ; i<attr.size(); i++){
 				if(tmp[j].equals(attr.get(i).getName())){
 					if(attr.get(i).getKeyType().equals("PK")){
 						PK = tmp[j+2];
+						
 						if(PK == null){
 							System.out.println("PK is null");
 							return false;
 						}
-						if(pkSet.contains(PK)){
+						if(pkSet.contains(PK))
+						{
 							System.out.println("PK has already exist");
 							return false;
 						}
-						pkSet.add(PK);
+						
+						//pkSet.add(PK);
+						//System.out.println(pkSet.size()+"ggg");
+						//System.out.println(pkSet.size()+"xxx");
 						
 					}
 					if(!attr.get(i).getDateType().equals(tmp[j+1])){
@@ -154,9 +196,10 @@ public class Table {
 						System.out.println("String Overflow");
 						return false;
 					}
+					System.out.println(tmp[j+2]);
 					if(attr.get(i).getDateType().equals("int") && 
-							(Integer.getInteger(tmp[j+2]) > Integer.MAX_VALUE || 
-								Integer.getInteger(tmp[j+2]) < Integer.MIN_VALUE) ){
+							(Integer.parseInt(tmp[j+2]) > Integer.MAX_VALUE || 
+									Integer.parseInt(tmp[j+2]) < Integer.MIN_VALUE) ){
 						System.out.println("Int Overflow");
 						return false;
 					}
@@ -190,6 +233,7 @@ public class Table {
 		if(!PK.equals("default")){
 			dbMap.put(PK, jobject);
 		}
+		writeTuple();
 		return true;
 	}
 	
@@ -197,10 +241,10 @@ public class Table {
 		FileWriter out;
 		try {
 			out = new FileWriter(attrfile.getAbsolutePath());
-			//out.write(String.valueOf(attr.size()));
+			out.write(String.valueOf(attr.size())+"\r\n");
 			for(int i=0; i<attr.size(); i++){
 				//out.write(attrs[i].getName() + " " + attrs[i].getDateType() + " " + attrs[i].getKeyType());
-				out.write(attr.get(i).getName() + " " + attr.get(i).getDateType() + " " + attr.get(i).getKeyType()+"\r\n");
+				out.write(attr.get(i).getName() + " " + attr.get(i).getDateType() + " " + attr.get(i).getKeyType()+" "+attr.get(i).getLength()+"\r\n");
 			}
 			
 			out.close();
@@ -215,7 +259,7 @@ public class Table {
 		try {
 			out = new FileWriter(dbfile.getAbsolutePath());
 			for(int i=0; i<jarray.length(); i++){
-					out.write(jarray.getJSONObject(i).toString());
+					out.append(jarray.getJSONObject(i).toString()+"\r\n");
 			}
 			out.close();
 		} catch (IOException e) {
