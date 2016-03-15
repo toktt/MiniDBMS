@@ -216,6 +216,8 @@ public class Parser {
 	
 	public static ArrayList Data_Insertion(String information)
 	{	
+		int count = 0;
+		int count_down = 0;
 		ArrayList answer = new ArrayList();
 		//String answer = "Data_Insert";
 		StringTokenizer str = new StringTokenizer(information);
@@ -249,35 +251,42 @@ public class Parser {
 		if(tmp_word.startsWith("("))  //有第一行敘述列
 		{
 			answer.add("order_told");
-			if(!tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(","))
+			if(tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(")"))
 			{
-				System.out.println("DATA_INSERTION:NO COMMA BEHIND ATTRIBUTE");
-				return null;
+				answer.add(tmp_word.substring(1, tmp_word.length()-1));
+				count = 1;
 			}
-			answer.add(tmp_word.substring(1, tmp_word.length()-1));
-			//answer = answer+" "+tmp_word.substring(1, tmp_word.length()-1);
-			tmp_word = str.nextToken();
-			//int tmp = 0;
-			while(!tmp_word.substring(tmp_word.length()-1).equals(")"))//還沒結束
+			else
 			{
-				if(tmp_word.equalsIgnoreCase("VALUES"))
-				{
-					System.out.println("DATA_INSERTION:haven't meet )yet,but already meet VALUES");
-					return null;
-				}
-				if(!tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(","))
-				{
-					System.out.println("DATA_INSERTION:NO COMMA OR ) BEHIND ATTRIBUTE");
-					return null;
-				}
-				
-				answer.add(tmp_word.substring(0, tmp_word.length()-1));
-				//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
+				answer.add(tmp_word.substring(1, tmp_word.length()-1));
+				count++;
+				//answer = answer+" "+tmp_word.substring(1, tmp_word.length()-1);
 				tmp_word = str.nextToken();
+				//int tmp = 0;
+				while(!tmp_word.substring(tmp_word.length()-1).equals(")"))//還沒結束
+				{	
+					count++;
+					if(tmp_word.equalsIgnoreCase("VALUES"))
+					{
+						System.out.println("DATA_INSERTION:haven't meet )yet,but already meet VALUES");
+						return null;
+					}
+					if(!tmp_word.substring(tmp_word.length()-1, tmp_word.length()).equals(","))
+					{
+						System.out.println("DATA_INSERTION:NO COMMA OR ) BEHIND ATTRIBUTE");
+						return null;
+					}
+					
+					answer.add(tmp_word.substring(0, tmp_word.length()-1));
+					//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
+					
+					tmp_word = str.nextToken();
+				}
+				answer.add(tmp_word.substring(0, tmp_word.length()-1));
+					count++;
+				//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
 			}
-			answer.add(tmp_word.substring(0, tmp_word.length()-1));
 			
-			//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
 			tmp_word = str.nextToken();
 		}
 		else
@@ -295,6 +304,11 @@ public class Parser {
 			}
 			String value;//存value
 			value = str.nextToken();
+			if(value.equals("("))
+			{
+				System.out.println("VALUE ONLY ( NOTHING ELSE");
+				return null;
+			}
 			while(!value.substring(value.length()-2, value.length()).equalsIgnoreCase(");") && (!value.substring(value.length()-1, value.length()).equalsIgnoreCase(")")))
 			{
 				//System.out.println(value.substring(value.length()-1, value.length())+"    yy");
@@ -636,8 +650,15 @@ public class Parser {
 						{
 							System.out.println(answer_insert.get(i));
 						}
+						
 						if(answer_insert.get(1).equals("order_told"))
 						{
+							if(((answer_insert.size()-2)/3) !=(table.attr.size()))
+							{
+								System.out.println("數目不符");
+							}
+							else
+							{
 							for(i = 0;i<(answer_insert.size()-2)/3;i++)
 							{
 								//data:  Attr, type, data
@@ -647,9 +668,16 @@ public class Parser {
 								//table.insert(answer_insert.get(0)+","+answer_insert.get(3+i)+","+answer_insert.get(3+2*i));
 							}
 							table.insert(for_insert);
+							}
 						}
 						else if(answer_insert.get(1).equals("origin_order"))
 						{
+							if(((answer_insert.size()-2)/2) !=(table.attr.size()))
+							{
+								System.out.println("數目不符");
+							}
+							else
+							{
 							for(i = 0;i<(answer_insert.size()-2)/2;i++)
 							{
 								//data:  Attr, type, data
@@ -659,6 +687,7 @@ public class Parser {
 							}
 							System.out.println(for_insert);
 							table.insert(for_insert);
+							}
 						}
 					}
 					else
