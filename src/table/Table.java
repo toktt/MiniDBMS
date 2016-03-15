@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import dataType.*;
 
 public class Table {
@@ -20,14 +21,14 @@ public class Table {
 	private Attribute[] attrs;
 	private String dbpath;
 	private String attrpath;
-	private String directory = "/MiniDBMS";
+	private String directory = "./";
 	private String PK = "default";
 	private HashMap<String,JSONObject> dbMap;
 	private File dbfile;
 	private File attrfile;
 	private JSONObject jobject;
 	private JSONArray jarray;
-	static private boolean dirty = false;
+	private boolean dirty = false;
 	
 	//use for first time create
 	public Table(String name){
@@ -65,7 +66,7 @@ public class Table {
 	}
 	
 	public void addAttr(int i, String name, String dataType, String keyType, int length){
-		//if datatype = int , lenght = -1
+		//if datatype = int , length = -1
 		dirty = true;
 		attrs[i] = new Attribute(name, dataType, keyType, length);
 		System.out.println("add"+ i + "th attr");
