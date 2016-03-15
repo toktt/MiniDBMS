@@ -181,9 +181,10 @@ public class Parser {
 	
 
 	
-	public static String Data_Insertion(String information)
+	public static ArrayList Data_Insertion(String information)
 	{	
-		String answer = "Data_Insert";
+		ArrayList answer = new ArrayList();
+		//String answer = "Data_Insert";
 		StringTokenizer str = new StringTokenizer(information);
 		if (!str.hasMoreTokens())
 		{
@@ -209,27 +210,30 @@ public class Parser {
 			
 		}
 		String attribure_name = str.nextToken();
-		//data.add(attribure_name);
-		answer = answer+" "+attribure_name;
+		answer.add(attribure_name);
+		//answer = answer+" "+attribure_name;
 		String tmp_word = str.nextToken();
 		if(tmp_word.startsWith("("))  //有第一行敘述列
 		{
-			//data.add(tmp_word.substring(1, tmp_word.length()-1));
-			answer = answer+" "+tmp_word.substring(1, tmp_word.length()-1);
+			answer.add("order_told");
+			answer.add(tmp_word.substring(1, tmp_word.length()-1));
+			//answer = answer+" "+tmp_word.substring(1, tmp_word.length()-1);
 			tmp_word = str.nextToken();
 			//int tmp = 0;
 			while(!tmp_word.substring(tmp_word.length()-1).equals(")"))//還沒結束
 			{
-				//data.add(tmp_word.substring(0, tmp_word.length()-1));
-				answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
+				answer.add(tmp_word.substring(0, tmp_word.length()-1));
+				//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
 				tmp_word = str.nextToken();
 			}
-			answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
+			answer.add(tmp_word.substring(0, tmp_word.length()-1));
+			//answer = answer+" "+tmp_word.substring(0, tmp_word.length()-1);
 			tmp_word = str.nextToken();
 		}
 		
 		if(tmp_word.equalsIgnoreCase("VALUES"))
 		{
+			answer.add("origin_order");
 			if (!str.hasMoreTokens())
 			{
 				System.out.println("NOTHING INPUT1");
@@ -246,11 +250,11 @@ public class Parser {
 					System.out.println("NOTHING INPUT");
 					return null;
 				}
-				while(!value.substring(value.length()-1).equalsIgnoreCase(","))
+				while(!value.substring(value.length()-1).equalsIgnoreCase(",") && !value.substring(value.length()-2,value.length()).equalsIgnoreCase(");"))
 				{
 					if (!str.hasMoreTokens())
 					{
-						System.out.println("NOTHING INPUT");
+						System.out.println("NOTHING INPUTx");
 						return null;
 					}
 					value = value+" "+str.nextToken();
@@ -265,7 +269,8 @@ public class Parser {
 					if(value.length()>=5 && value.substring(1, 2).equals("'") && value.substring(value.length()-2,value.length()).equals("',"))
 					{
 						//我是字串
-						answer = answer+" "+value.substring(2,value.length()-2);
+						//answer = answer+" "+value.substring(2,value.length()-2);
+						answer.add(value.substring(2,value.length()-2));
 					}
 					else
 					{
@@ -277,7 +282,8 @@ public class Parser {
 				            System.out.println("我不是int也不是varchar");
 				            return null;
 				        }
-						answer = answer+" "+value.substring(1,value.length()-1);
+						//answer = answer+" "+value.substring(1,value.length()-1);
+						answer.add(value.substring(1,value.length()-1));
 					}
 					//data.add(value.substring(1,value.length()-1));
 					
@@ -292,12 +298,14 @@ public class Parser {
 			            return null;
 			        }
 					//data.add(value.substring(0,value.length()-1));
-					answer = answer+" "+value.substring(0,value.length()-1);
+					//answer = answer+" "+value.substring(0,value.length()-1);
+					answer.add(value.substring(0,value.length()-1));
 				}
 				else if(value.length()>=4 && value.substring(0,1).equalsIgnoreCase("'") && value.substring(value.length()-2,value.length()).equalsIgnoreCase("',"))//varchar
 				{
 					//data.add(value.substring(1,value.length()-2));
-					answer = answer+" "+value.substring(1,value.length()-2);
+					//answer = answer+" "+value.substring(1,value.length()-2);
+					answer.add(value.substring(1,value.length()-2));
 				}
 				else
 				{
@@ -321,11 +329,13 @@ public class Parser {
 		            System.out.println("我不是int");
 		            return null;
 		        }
-				answer = answer+" "+value.substring(1,value.length()-2);
+				//answer = answer+" "+value.substring(1,value.length()-2);
+				answer.add(value.substring(1,value.length()-2));
 				}
 				else if(value.length()>=6 && value.substring(1,2).equals("'") && value.substring(value.length()-3,value.length()).equals("');"))//varchar
 				{
-					answer = answer+" "+value.substring(2,value.length()-3);
+					//answer = answer+" "+value.substring(2,value.length()-3);
+					answer.add(value.substring(2,value.length()-3));
 				}
 				else
 				{
@@ -343,12 +353,14 @@ public class Parser {
 	            System.out.println("我不是int");
 	            return null;
 	        }
-			answer = answer+" "+value.substring(0,value.length()-2);
+			//answer = answer+" "+value.substring(0,value.length()-2);
+			answer.add(value.substring(0,value.length()-2));
 			}
 			//varchar
 			else if(value.length()>=5 && value.substring(0,1).equals("'") && value.substring(value.length()-3,value.length()).equals("');"))//varchar
 			{
-				answer = answer+" "+value.substring(1,value.length()-3);
+				//answer = answer+" "+value.substring(1,value.length()-3);
+				answer.add(value.substring(1,value.length()-3));
 			}
 			//error
 			else
@@ -366,18 +378,12 @@ public class Parser {
 		
 	}
 	
-	public static String Handle_Table(String answer)
-	{
-		String correct_or_not = "wrong";//預設錯誤
-		
-		
-		
-		return correct_or_not;
-	}
+
 	
 	public static void main(String[] args) throws IOException 
 	{
-		
+		int i = 0;
+		ArrayList<String> answer_insert = new ArrayList();
 		FileReader fr = new FileReader("input.txt");
 		//FileWriter fw = new FileWriter("output.txt");
 		BufferedReader br = new BufferedReader(fr);
@@ -413,7 +419,7 @@ public class Parser {
 				
 				Table table = new Table(parse_answer.nextToken());
 				table.newTable();
-				int i = 0;
+				
 				while(parse_answer.hasMoreTokens())
 				{
 					String name = parse_answer.nextToken();
@@ -421,17 +427,7 @@ public class Parser {
 					//tmp = parse_answer.nextToken();
 					String keyType = "default";
 					int length = 0;
-					if(dataType.length()>=15 && dataType.substring(dataType.length()-11, dataType.length()).equals("PRIMARY_KEY"))
-					{
-						keyType = dataType.substring(0, dataType.length()-12);
-						dataType = dataType.substring(0, dataType.length()-12);
-						
-					}
-					else
-					{
-						keyType = "default";
-					}
-					if(dataType.length()>=10 && dataType.substring(0,8).equals("varchar(")  &&  dataType.substring(dataType.length()-1, dataType.length()).equals(""))
+					if(dataType.length()>=10 && dataType.substring(0,8).equals("varchar(")  &&  dataType.substring(dataType.length()-1, dataType.length()).equals(")"))
 					{
 								length = Integer.parseInt(dataType.substring(8,dataType.length()-1));
 					}
@@ -439,15 +435,32 @@ public class Parser {
 					{
 						length = -1;
 					}
+					if(dataType.length()>=15 && dataType.substring(dataType.length()-11, dataType.length()).equals("PRIMARY_KEY"))
+					{
+						keyType = "PK";
+						
+						if(dataType.substring(0,7).equalsIgnoreCase("varchar"))
+						{
+							dataType = "String";
+						}
+						
+						
+					}
+					else
+					{
+						keyType = "default";
+						if(dataType.length()>=10 && dataType.substring(0,7).equalsIgnoreCase("varchar"))
+						{
+							dataType = "String";
+						}
+					}
+					
 					//System.out.println(i+ name+ dataType+ keyType+ length);
 					table.addAttr(i, name, dataType, keyType, length);
 					i++;
 					
 				}
 
-				//fw.write(answer);
-		        //fw.flush();
-		        //fw.close();
 				}
 			}
 			else 
@@ -457,16 +470,41 @@ public class Parser {
 		}
 		else if(check_type.equals("INSERT"))
 		{
+			
 			if(	check_type_second_word.equals("INTO"))
 			{
-				answer = Data_Insertion(information);
-				if(answer == null)
+				answer_insert = Data_Insertion(information);
+				if(answer_insert == null)
 				{
 					System.out.println("INSERT語法有誤");
 				}
 				else
 				{
-				System.out.println(answer);
+				for(i = 0;i<answer_insert.size();i++)
+				{
+					System.out.println(answer_insert.get(i));
+				}
+				if(answer_insert.get(0).equals("order_told"))
+				{
+					for(i = 0;i<(answer_insert.size()-2)/2;i++)
+					{
+						//data:  Attr, type, data
+						insert(answer_insert.get(0)+","+answer_insert.get(3+i)+","+answer_insert.get(3+2*i));
+					}
+				}
+				else if(answer_insert.get(0).equals("origin_order"))
+				{
+					for(i = 0;i<(answer_insert.size()-2);i++)
+					{
+						//data:  Attr, type, data
+						
+						table.insert(answer_insert.get(0)+","+answer_insert.get(3+i)+","+answer_insert.get(3+2*i));
+					}
+				}
+				
+				
+				
+				
 				//fw.write(answer);
 		        //fw.flush();
 		        //fw.close();

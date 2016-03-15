@@ -5,14 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import dataType.*;
 
@@ -27,8 +28,11 @@ public class Table {
 	private File dbfile;
 	private File attrfile;
 	private JSONObject jobject;
-	private JSONArray jarray;
+	private JSONArray jarray = new JSONArray();
 	private boolean dirty = false;
+	//private Attribute test;
+	private ArrayList<Attribute>attr = new ArrayList();
+	private Set<String> pkSet;
 	
 	//use for first time create
 	public Table(String name){
@@ -68,9 +72,10 @@ public class Table {
 	public void addAttr(int i, String name, String dataType, String keyType, int length){
 		//if datatype = int , length = -1
 		dirty = true;
-		System.out.println(i+ name+ dataType+ keyType+ length);
-		attrs[i] = new Attribute(name, dataType, keyType, length);
-		//System.out.println(i+ name+ dataType+ keyType+ length);
+		System.out.println(i+" "+name+ " "+dataType+" " +keyType+" "+ length);
+		//attrs[i] = new Attribute(name, dataType, keyType, length);
+		attr.add(new Attribute(name, dataType, keyType, length));
+		System.out.println(attr.get(0).getName());
 		System.out.println("add"+ i + "th attr");
 	}
 	
@@ -125,37 +130,47 @@ public class Table {
 		//check confilct and make a jobect
 		//first check attr
 		
-		for(i=0, j=0; i<attrs.length && j<tmp.length; i++,j+=3){
-				if(attrs[i].getKeyType().equals("PK")){
-					PK = tmp[j+1];
-					if(PK == null){
-						System.out.println("PK is null");
+		for(j=0; j<tmp.length; j+=3){
+			for(i=0 ; i<attr.size(); i++){
+				if(tmp[j].equals(attr.get(i).getName())){
+					if(attr.get(i).getKeyType().equals("PK")){
+						PK = tmp[j+2];
+						if(PK == null){
+							System.out.println("PK is null");
+							return false;
+						}
+						if(pkSet.contains(PK)){
+							System.out.println("PK has already exist");
+							return false;
+						}
+						pkSet.add(PK);
+						
+					}
+					if(!attr.get(i).getDateType().equals(tmp[j+1])){
+						System.out.println("Wrong data type");
 						return false;
 					}
+					if(attr.get(i).getDateType().equals("String") && tmp[j+2].length() > attr.get(i).getLength()){
+						System.out.println("String Overflow");
+						return false;
+					}
+					if(attr.get(i).getDateType().equals("int") && 
+							(Integer.getInteger(tmp[j+2]) > Integer.MAX_VALUE || 
+								Integer.getInteger(tmp[j+2]) < Integer.MIN_VALUE) ){
+						System.out.println("Int Overflow");
+						return false;
+					}
+					try {
+						jobject.put(attr.get(i).getName(), tmp[j+2]);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
 				}
-				if(!attrs[i].getDateType().equals(tmp[j])){
-					System.out.println("Wrong data type");
-					return false;
-				}
-				if(attrs[i].getDateType().equals("String") && tmp[j+1].length() > attrs[i].getLength()){
-					System.out.println("String Overflow");
-					return false;
-				}
-				if(attrs[i].getDateType().equals("Int") && 
-						(Integer.getInteger(tmp[j+1]) > Integer.MAX_VALUE || 
-							Integer.getInteger(tmp[j+1]) < Integer.MIN_VALUE) ){
-					System.out.println("Int Overflow");
-					return false;
-				}
-				try {
-					jobject.put(attrs[i].getName(), tmp[j+1]);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
 		}
-		//not check PK
-		//add a PKset 
+
 		//check if object is already exist
 		for(int k=0; k<jarray.length(); k++){
 			try {
@@ -182,10 +197,12 @@ public class Table {
 		FileWriter out;
 		try {
 			out = new FileWriter(attrfile.getAbsolutePath());
-			out.write(String.valueOf(attrs.length));
-			for(int i=0; i<attrs.length; i++){
-				out.write(attrs[i].getName() + " " + attrs[i].getDateType() + " " + attrs[i].getKeyType());
+			//out.write(String.valueOf(attr.size()));
+			for(int i=0; i<attr.size(); i++){
+				//out.write(attrs[i].getName() + " " + attrs[i].getDateType() + " " + attrs[i].getKeyType());
+				out.write(attr.get(i).getName() + " " + attr.get(i).getDateType() + " " + attr.get(i).getKeyType()+"\r\n");
 			}
+			
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
