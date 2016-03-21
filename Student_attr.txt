@@ -1,5 +1,0 @@
-4
-studentId int PK -1
-name String default 15
-gender String default 1
-age int default -1

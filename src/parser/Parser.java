@@ -551,9 +551,9 @@ public class Parser {
 			order = order+" "+tmp;
 			if(tmp.substring(tmp.length()-1, tmp.length()).equalsIgnoreCase(";"))break;
 		}
-		if(	check_type.equals("CREATE") )
+		if(	check_type.equalsIgnoreCase("CREATE") )
 		{
-			if(	check_type_second_word.equals("TABLE"))
+			if(	check_type_second_word.equalsIgnoreCase("TABLE"))
 			{
 				answer = Create_Table(order);
 				if(answer == null)
@@ -623,10 +623,10 @@ public class Parser {
 				System.out.println("not CREATE TABLE");
 			}
 		}
-		else if(check_type.equals("INSERT"))
+		else if(check_type.equalsIgnoreCase("INSERT"))
 		{
 			
-			if(	check_type_second_word.equals("INTO"))
+			if(	check_type_second_word.equalsIgnoreCase("INTO"))
 			{
 				
 				answer_insert = Data_Insertion(order);

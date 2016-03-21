@@ -157,7 +157,7 @@ public class Table {
 						for(q = 0;q<jarray.length();q++)
 						{
 							try {
-								pkSet.add(jarray.getJSONObject(q).get("studentId").toString());
+								pkSet.add(jarray.getJSONObject(q).get(attr.get(y).getName()).toString());
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

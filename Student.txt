@@ -1,5 +1,0 @@
-{"studentId":"10","gender":"M","name":"John Smith","age":"22"}
-{"studentId":"11","gender":"F","name":"Hsu You-Ting","age":"23"}
-{"studentId":"12","gender":"F","name":"Ai Toshiko","age":"21"}
-{"studentId":"13","gender":"M","name":"Fernando Sierra","age":"20"}
-{"studentId":"14","gender":"M","name":"Mohammed Ali","age":"25"}
